@@ -7,8 +7,6 @@ The animation is saved as a GIF and displayed at the end.
 """
 
 import numpy as np
-import matplotlib
-matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
 from scipy.spatial import Voronoi
 import pandas as pd
@@ -23,7 +21,7 @@ def plot_voronoi_cell(ax, vor, point_index, **kwargs):
         polygon = [vor.vertices[i] for i in region]
         ax.fill(*zip(*polygon), **kwargs)
 
-data = pd.read_csv("Data/raw_data/positions_1.csv")
+data = pd.read_csv("/home/jeanlienhard/Documents/Cell_GNN/GNN for acceleration/Supervised/Training/acceleration_15Conv_256/computed_trajectories/computed_positions_11.csv")
 steps = data["step"].unique()
 fig, ax = plt.subplots(figsize=(6, 6))
 
@@ -51,10 +49,10 @@ def update(frame):
 
 ani = FuncAnimation(
     fig, update,
-    frames=len(steps),
+    frames=200,#len(steps),
     interval=100,
     repeat=False
 )
-ani.save('Results processing/animated_trajectory/animation_trajectory_41.gif')
+ani.save('/home/jeanlienhard/Documents/Cell_GNN/Results processing/animated_trajectory/animation_computed_trajectory_11.gif')
 
 plt.show()
