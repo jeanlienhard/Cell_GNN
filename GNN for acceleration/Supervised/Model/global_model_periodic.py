@@ -12,6 +12,7 @@ import gnn_model
 import numpy as np
 from shapely.geometry import Polygon, box 
 from torch_geometric.utils import add_self_loops
+from sklearn.neighbors import NearestNeighbors 
 
 
 class LearnedSimulator_periodic(nn.Module):
@@ -81,10 +82,10 @@ class LearnedSimulator_periodic(nn.Module):
         velocity_sequence = velocity_sequence[:n_cells]
         target_indices = np.arange(n_cells)
         """ Edge_index """
-        senders, receivers = self.compute_connectivity_from_voronoi(most_recent_position.cpu().detach().numpy(),target_indices)
+        senders, receivers = self.compute_connectivity_knn(most_recent_position.cpu().detach().numpy(),target_indices)
+        # senders, receivers = self.compute_connectivity_from_voronoi(most_recent_position.cpu().detach().numpy(),target_indices)
         senders = senders.long()
         receivers = receivers.long()
-        
         """ Nodes Features """
         node_features = []
         # Velocity
@@ -173,6 +174,36 @@ class LearnedSimulator_periodic(nn.Module):
         for i in target_indices:
             edges.add((i,i))
         senders, receivers = zip(*[(i, j) for i, j in edges] + [(j, i) for i, j in edges]) if edges else ([], [])
+        return torch.tensor(senders).to(self.device), torch.tensor(receivers).to(self.device)
+    
+    def compute_connectivity_knn(self, most_recent_position, target_indices, k=5):
+        """
+        Computes the connectivity (senders and receivers) using the k-nearest neighbors graph.
+
+        Args:
+            most_recent_position (np.ndarray): Positions of the nodes, shape (N, 2).
+            target_indices (list or np.ndarray): Indices of the nodes to keep.
+            k (int): Number of nearest neighbors to connect.
+
+        Returns:
+            tuple: (senders, receivers) as torch tensors.
+        """
+        n_cells = len(target_indices)
+        nbrs = NearestNeighbors(n_neighbors=k + 1, algorithm='auto').fit(most_recent_position)
+        _, indices = nbrs.kneighbors(most_recent_position)
+        edges = set()
+        for i, neighbors in enumerate(indices):
+            for j in neighbors[1:]:
+                point_i = most_recent_position[i]
+                point_j = most_recent_position[j]
+                mean = np.mean(most_recent_position)
+                if np.all((point_i >= -2+mean) & (point_i <= 2+mean)) and np.all((point_j >= -2+mean) & (point_j <= 2+mean)):
+                    i_mod, j_mod = i % n_cells, j % n_cells
+                    if i_mod != j_mod and i_mod in target_indices and j_mod in target_indices:
+                        edges.add((i_mod, j_mod))
+        for i in target_indices:
+            edges.add((i,i))
+        senders, receivers = zip(*[(i, j) for i, j in edges]) if edges else ([], [])
         return torch.tensor(senders).to(self.device), torch.tensor(receivers).to(self.device)
 
     def time_diff(self, input_sequence):

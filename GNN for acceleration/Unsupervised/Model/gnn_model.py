@@ -10,7 +10,6 @@ import torch
 import torch.nn as nn
 from torch_geometric.nn import MessagePassing
 from torch_geometric.data import Data
-from torch_geometric.nn import GraphConv,GATv2Conv
 
 def build_mlp(input_size:int,hidden_size: int, num_hidden_layers: int, output_size: int) -> nn.Sequential:
     """
@@ -129,7 +128,7 @@ class NodeGNN(MessagePassing):
         self.edge_mlp = nn.Sequential(
             nn.Linear(in_channels + edge_feat_dim, out_channels),
             nn.ReLU(),
-            nn.Linear(out_channels, out_channels)
+            nn.Linear(out_channels, out_channels),
         )
         self.lin_self = nn.Linear(in_channels, out_channels)
 

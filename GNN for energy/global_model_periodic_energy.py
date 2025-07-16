@@ -69,30 +69,16 @@ class LearnedSimulator_periodic(nn.Module):
         """
         
         most_recent_position = position_sequence[:, -1]
-        # print(position_sequence.shape)
         target_indices = np.arange(n_cells)
         """ Edge_index """
         senders, receivers = self.senders,self.receivers#self.fully_connected_edges(most_recent_position.cpu().detach().numpy(),target_indices)
         senders = senders.long()
         receivers = receivers.long()
-        
-        """ Nodes Features """
-        node_features = [] 
-        #print(torch.cat(node_features, dim=-1))
 
         """ Edge_features """
-        # distance, comparative velocity
-        edge_features = []
         normalized_relative_displacements = (most_recent_position[receivers] - most_recent_position[senders])
-        # normalized_relative_velocity = (velocity_sequence[:,-1][senders]-velocity_sequence[:,-1][receivers])
-        # norm_velocity = torch.norm(normalized_relative_velocity, dim=-1, keepdim=True)
         adjusted_displacements = ((normalized_relative_displacements + 1.0) % 2.0) - 1.0
-        # edge_features.append(adjusted_displacements)
         normalized_relative_distances = torch.norm(adjusted_displacements, dim=-1, keepdim=True)
-        # edge_features.append(normalized_relative_displacements/normalized_relative_distances)
-        # edge_features.append(1/(1+torch.exp(10*normalized_relative_distances-10)))
-        # edge_features.append(norm_velocity)
-        # edge_features.append(normalized_relative_distances)
         edge_index=torch.stack([senders, receivers])
         edge_attr=torch.exp(-2*normalized_relative_distances)
         # print(edge_attr)

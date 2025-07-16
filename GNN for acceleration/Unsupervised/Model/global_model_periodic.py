@@ -10,8 +10,6 @@ from torch_geometric.data import Data
 from scipy.spatial import Voronoi
 import gnn_model
 import numpy as np
-from shapely.geometry import Polygon, box 
-from torch_geometric.utils import add_self_loops
 
 
 class LearnedSimulator_periodic(nn.Module):

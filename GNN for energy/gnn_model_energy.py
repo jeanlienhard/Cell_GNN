@@ -34,7 +34,7 @@ class NodeGNN(MessagePassing):
         self.edge_mlp = nn.Sequential(
             nn.Linear(in_channels + edge_feat_dim, out_channels),
             nn.ReLU(),
-            nn.Linear(out_channels, out_channels)
+            nn.Linear(out_channels, out_channels),
         )
 
         self.lin_self = nn.Linear(in_channels, out_channels)

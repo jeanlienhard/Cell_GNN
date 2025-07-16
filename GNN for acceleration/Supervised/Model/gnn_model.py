@@ -10,7 +10,6 @@ import torch
 import torch.nn as nn
 from torch_geometric.nn import MessagePassing
 from torch_geometric.data import Data
-from torch_geometric.nn import GraphConv,GATv2Conv
 
 def build_mlp(input_size:int,hidden_size: int, num_hidden_layers: int, output_size: int) -> nn.Sequential:
     """
