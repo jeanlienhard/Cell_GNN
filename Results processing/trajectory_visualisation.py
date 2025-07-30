@@ -20,7 +20,7 @@ def plot_voronoi_cell(ax, vor, point_index, **kwargs):
         polygon = [vor.vertices[i] for i in region]
         ax.fill(*zip(*polygon), **kwargs)
 
-data = pd.read_csv("/home/jeanlienhard/Documents/Cell_GNN/GNN for acceleration/Supervised/Training/acceleration_15Conv_256_5knn/computed_trajectory/computed_positions_1.csv")
+data = pd.read_csv("/home/jeanlienhard/Documents/Cell_GNN_clear/Cell_GNN/GNN for acceleration/Supervised/Training/acceleration_15Conv_256_5knn/computed_trajectory/computed_positions_1.csv")
 steps = data["step"].unique()
 fig, ax = plt.subplots(figsize=(6, 6))
 
@@ -51,6 +51,6 @@ ani = FuncAnimation(
     interval=100,
     repeat=False
 )
-ani.save('/home/jeanlienhard/Documents/Cell_GNN/GNN for acceleration/Supervised/Training/acceleration_15Conv_256_5knn/computed_trajectory/animation_computed_trajectory_1.gif')
+ani.save('/home/jeanlienhard/Documents/Cell_GNN_clear/Cell_GNN/GNN for acceleration/Supervised/Training/acceleration_15Conv_256_5knn/computed_trajectory/animation_computed_trajectory_1.gif')
 
 plt.show()
